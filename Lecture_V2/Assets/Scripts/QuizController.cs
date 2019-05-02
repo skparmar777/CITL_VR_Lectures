@@ -8,12 +8,12 @@ using UnityEngine.SceneManagement;
 public class QuizController : MonoBehaviour
 {
     public TextMeshPro t;
-    private int i = 0;
+    private int i = 1;
     private short correct = 1;
     private short[] correct2 = { 1, 2 };
     private bool twoCorrect = false;
     private int score = 0;
-    private const int totQuestions = 5 + 1;
+    private const int totQuestions = 5;//+ 1;
     private const int totPoints = 9;
     public bool quizOver = false;
 
@@ -34,34 +34,15 @@ public class QuizController : MonoBehaviour
         {
             return;
         }
-        OVRInput.Button.One
-        if (rightAnswer() && i < totQuestions)
+        if(i <= totQuestions)
         {
-            if (twoCorrect == true)
-            {
-                score += 1;
-            }
-            else
-            {
-                score += 2;
-            }
-            nextQ();
+            rightAnswer();
         }
-        else if ((Input.GetKeyDown(correct2[0]) || Input.GetKeyDown(correct2[0])) && i < totQuestions && twoCorrect)
-        {
-            score += 1;
-            nextQ();
-        }
-
-        else if (Input.anyKeyDown)
-        {
-            nextQ();
-        }
-
-        if (quizOver && OVRInput.GetDown(OVRInput.Button.One)) 
+        if (quizOver && OVRInput.GetDown(OVRInput.Button.Three))
         {
             SceneManager.LoadScene("menu");
         }
+
     }
 
     void nextQ()
@@ -73,25 +54,24 @@ public class QuizController : MonoBehaviour
                 t.text = " Question Two: In one sentence, can you explain how and when the Sahri Murdagon archaeological artifacts were initially found?" +
             "\nA) In 1970, French researchers finished their search for Sahri Murdagon" +
             "\nB) In 1967, French researchers finished their search for Sahri Murdagon" +
-            "\nC) In 1970, rock climbers initially found archaelogical artifacts of Sahri Murdagon" +
-            "\nD) In 1967, rock climbers initially found archaelogical artifacts of Sahri Murdagon";
-                correct = "c";
-                correct2[0] = "a";
-                correct2[1] = "d";
+            "\nX) In 1970, rock climbers initially found archaelogical artifacts of Sahri Murdagon" +
+            "\nY) In 1967, rock climbers initially found archaelogical artifacts of Sahri Murdagon";
+                correct = 3;
+                correct2[0] = 1;
+                correct2[1] = 4;
                 twoCorrect = true;
                 break;
             case 2:
                 t.fontSize = 3;
 
                 t.text = "Question Three: Aside from bones, name two things that were found in the Sahri Murdagon urns." +
-            "\nA) Balls of clay and egg-shaped stones" +
+            "\nA) Petrified fruit and mummified field mice" +
             "\nB) Balls of clay and stone cutting tools" +
-            "\nC) Votive figurines and stone cutting tools" +
-            "\nD) Wax and stone cutting tools" +
-            "\nE) Petrified fruit and mummified field mice";
-                correct = "c";
-                correct2[0] = "b";
-                correct2[1] = "d";
+            "\nX) Votive figurines and stone cutting tools" +
+            "\nY) Wax and stone cutting tools";
+                correct = 3;
+                correct2[0] = 2;
+                correct2[1] = 4;
                 twoCorrect = true;
                 break;
             case 3:
@@ -104,11 +84,11 @@ public class QuizController : MonoBehaviour
             "\n4) They were natural formations created by decades of dripping water" +
             "\n\nA) 1 and 2" +
             "\nB) 1 and 3" +
-            "\nC) 3 and 4" +
-            "\nD) 2 and 3";
-                correct = "a";
-                correct2[0] = "b";
-                correct2[1] = "d";
+            "\nX) 3 and 4" +
+            "\nY) 2 and 3";
+                correct = 1;
+                correct2[0] = 2;
+                correct2[1] = 4;
                 twoCorrect = true;
                 break;
             case 4:
@@ -122,11 +102,11 @@ public class QuizController : MonoBehaviour
             "\n4) For 2: Petroglyphs are still undated, so connection with Hittite cultures is unproven. Ancient Pamirs are believed to have used stone cutting tools, which were found in the urns, and practiced cave painting. These burial practices are not limited to nomadic groups." +
             "\n\nA) 1 and 3" +
             "\nB) 2 and 3" +
-            "\nC) 1 and 4" +
-            "\nD) 2 and 4";
-                correct = "c";
-                correct2[0] = "a";
-                correct2[1] = "d";
+            "\nX) 1 and 4" +
+            "\nY) 2 and 4";
+                correct = 3;
+                correct2[0] = 1;
+                correct2[1] = 4;
                 twoCorrect = true;
                 break;
             case (totQuestions):
@@ -143,8 +123,35 @@ public class QuizController : MonoBehaviour
     }
 
 
-    int rightAnswer()
+    void rightAnswer()
     {
-        OVRInput.GetDown(OVRInput.Button.One)
+        if (OVRInput.GetDown(OVRInput.Button.One) && correct == 1 ||
+            OVRInput.GetDown(OVRInput.Button.Two) && correct == 2 ||
+            OVRInput.GetDown(OVRInput.Button.Three) && correct == 3 ||
+            OVRInput.GetDown(OVRInput.Button.Four) && correct == 4)
+        {
+            if (twoCorrect == true)
+            {
+                score += 1;
+            }
+            else
+            {
+                score += 2;
+            }
+            nextQ();
+        } else if (twoCorrect && (OVRInput.GetDown(OVRInput.Button.One) && (correct2[0] == 1 || correct2[1] == 1)) ||
+             (OVRInput.GetDown(OVRInput.Button.Two) && (correct2[0] == 2 || correct2[1] == 2)) ||
+             (OVRInput.GetDown(OVRInput.Button.Three) && (correct2[0] == 3 || correct2[1] == 3)) ||
+             (OVRInput.GetDown(OVRInput.Button.Four) && (correct2[0] == 4 || correct2[1] == 4)) )
+            {
+                score += 1;
+                nextQ();
+            }
+            else if (OVRInput.GetDown(OVRInput.Button.One) || OVRInput.GetDown(OVRInput.Button.Two) ||
+            OVRInput.GetDown(OVRInput.Button.Three) || OVRInput.GetDown(OVRInput.Button.Four))
+            {
+                nextQ();
+            }
+
     }
 }

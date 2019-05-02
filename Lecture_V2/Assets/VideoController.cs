@@ -8,7 +8,7 @@ public class VideoController : MonoBehaviour {
     public VideoPlayer videoPlayer;
     public VideoClip[] videoClips;
     public int videoClipIndex;
-    public static bool playing = true;
+    public bool playing = true;
  
     // Use this for initialization
     void Start () {
@@ -21,7 +21,10 @@ public class VideoController : MonoBehaviour {
         {
             SetNextClip();
         }
-        if (Input.GetKeyDown(KeyCode.Tab)) SetNextClip();
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            SetNextClip();
+        }
         playing = videoPlayer.isPlaying;
     }
 
