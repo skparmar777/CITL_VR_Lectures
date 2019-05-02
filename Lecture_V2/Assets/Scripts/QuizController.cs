@@ -9,13 +9,14 @@ public class QuizController : MonoBehaviour
 {
     public TextMeshPro t;
     private int i = 0;
-    private string correct = "a";
-    private string[] correct2 = { "a", "b" };
+    private short correct = 1;
+    private short[] correct2 = { 1, 2 };
     private bool twoCorrect = false;
     private int score = 0;
     private const int totQuestions = 5 + 1;
     private const int totPoints = 9;
     public bool quizOver = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,9 +34,10 @@ public class QuizController : MonoBehaviour
         {
             return;
         }
-        if (Input.GetKeyDown(correct) && i < totQuestions)
+        OVRInput.Button.One
+        if (rightAnswer() && i < totQuestions)
         {
-            if (twoCorrect = true)
+            if (twoCorrect == true)
             {
                 score += 1;
             }
@@ -138,5 +140,11 @@ public class QuizController : MonoBehaviour
 
         i += 1;
 
+    }
+
+
+    int rightAnswer()
+    {
+        OVRInput.GetDown(OVRInput.Button.One)
     }
 }

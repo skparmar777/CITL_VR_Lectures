@@ -26,12 +26,12 @@ public class OurLaserPointer : MonoBehaviour {
             {
                 if (hit.collider != null)
                 {
-                    Debug.Log(hit.collider.name);
+                    Debug.Log(hit.collider.gameObject.name);
                     if (OVRInput.Get(OVRInput.Button.One))
                 { 
-                    if (hit.collider.gameObject.name == "play")
+                    if (hit.collider.gameObject.name == "start")
                     {
-                        SceneManager.LoadScene("tutorial");
+                        SceneManager.LoadScene("intro");
                     } else if (hit.collider.gameObject.name == "quit")
                     {
 
