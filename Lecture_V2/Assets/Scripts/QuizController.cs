@@ -16,7 +16,11 @@ public class QuizController : MonoBehaviour
     private const int totQuestions = 5;//+ 1;
     private const int totPoints = 9;
     public bool quizOver = false;
-
+    public Ray ray;
+    public LineRenderer laser;
+    public short inp;
+    public bool go = false;
+    public GameObject pointer;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,15 +34,57 @@ public class QuizController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        RaycastHit hit;
+        Vector3 laserVector = pointer.transform.position + 1000 * pointer.transform.forward;
+        Vector3[] laserArray = new Vector3[2] { pointer.transform.position, laserVector };
+        laser.SetPositions(laserArray);
+
+        go = false;
+        ray = new Ray(pointer.transform.position, pointer.transform.forward);
+        Physics.Raycast(pointer.transform.position, pointer.transform.forward);
+        laser.enabled = true;
+        if (Physics.Raycast(ray, out hit, 1000))
+        {
+            if (hit.collider != null)
+            {
+                Debug.Log(hit.collider.gameObject.name);
+                if (OVRInput.GetDown(OVRInput.Button.One))
+                {
+                    if (hit.collider.gameObject.name == "A")
+                    {
+                        inp = 1;
+                        go = true;
+                    }
+                    else if (hit.collider.gameObject.name == "B")
+                    {
+                        inp = 2;
+                        go = true;
+                    }
+                    else if (hit.collider.gameObject.name == "X")
+                    {
+                        inp = 3;
+                        go = true;
+                    }
+                    else if (hit.collider.gameObject.name == "Y")
+                    {
+                        inp = 4;
+                        go = true;
+                    }
+                }
+
+            }
+        }
+
+
         if (Input.GetMouseButtonDown(0))
         {
             return;
         }
-        if(i <= totQuestions)
+        if (i <= totQuestions && go == true)
         {
-            rightAnswer();
+            rightAnswer(inp);
         }
-        if (quizOver && OVRInput.GetDown(OVRInput.Button.Three))
+        if (quizOver && OVRInput.GetDown(OVRInput.Button.Four))
         {
             SceneManager.LoadScene("menu");
         }
@@ -68,7 +114,7 @@ public class QuizController : MonoBehaviour
             "\nA) Petrified fruit and mummified field mice" +
             "\nB) Balls of clay and stone cutting tools" +
             "\nX) Votive figurines and stone cutting tools" +
-            "\nY) Wax and stone cutting tools";
+            "\nY) Ceremonial objects and rare sediment";
                 correct = 3;
                 correct2[0] = 2;
                 correct2[1] = 4;
@@ -97,8 +143,8 @@ public class QuizController : MonoBehaviour
             "\nTheory 1) A nomadic civilization, possibly proto-Hittite, from a distant settlement buried the deceased, then disinterred and reinterred their remains in urns and carried the urns to Padkart Alkmy." +
             "\nTheory 2) The urns were created by the Ancient Pamirs or non-nomadic cultures." +
             "\n1) For 1: Evidence of settlements in the immediate area around Padjart Alkmy, and petroglyphs in the region resemble early representations of the Hazzi mountain God, associated with the proto-Hittite cultures." +
-            "\n2) For 1: Zeus told us its true, and as the king of Olympus, we must listen." +
-            "\n3) For 2: Perry the Platypus foiled the plans of Dr. Doofenshmirtz, extinguishing the last shred of hope the man had to find happiness." +
+            "\n2) For 1: Ancient maps, etched into stone, have been discovered near the digsite.  These maps were likely used by nomadic civilizations to track wild game." +
+            "\n3) For 2: Ancient Pamirs are known to be skilled fisherman, using intricately fashioned tools such as copper fishing hooks and stone spearheads.  Examples of these were found at the burial site, approximately 4km from the Indian Ocean." +
             "\n4) For 2: Petroglyphs are still undated, so connection with Hittite cultures is unproven. Ancient Pamirs are believed to have used stone cutting tools, which were found in the urns, and practiced cave painting. These burial practices are not limited to nomadic groups." +
             "\n\nA) 1 and 3" +
             "\nB) 2 and 3" +
@@ -113,22 +159,25 @@ public class QuizController : MonoBehaviour
                 t.fontSize = 5;
 
                 t.text = " Congratulations! you scored: " +
-            score + "/" + totPoints + "\n Press A to return to the menu";
+            score + "/" + totPoints + "\n Press Y to return to the menu";
                 quizOver = true;
                 break;
         }
 
         i += 1;
+        StartCoroutine(waiting());
 
     }
 
-
-    void rightAnswer()
+    IEnumerator waiting()
     {
-        if (OVRInput.GetDown(OVRInput.Button.One) && correct == 1 ||
-            OVRInput.GetDown(OVRInput.Button.Two) && correct == 2 ||
-            OVRInput.GetDown(OVRInput.Button.Three) && correct == 3 ||
-            OVRInput.GetDown(OVRInput.Button.Four) && correct == 4)
+        yield return new WaitForSeconds(5);
+    }
+
+
+    void rightAnswer(short inp)
+    {
+        if (inp == correct)
         {
             if (twoCorrect == true)
             {
@@ -139,16 +188,12 @@ public class QuizController : MonoBehaviour
                 score += 2;
             }
             nextQ();
-        } else if (twoCorrect && (OVRInput.GetDown(OVRInput.Button.One) && (correct2[0] == 1 || correct2[1] == 1)) ||
-             (OVRInput.GetDown(OVRInput.Button.Two) && (correct2[0] == 2 || correct2[1] == 2)) ||
-             (OVRInput.GetDown(OVRInput.Button.Three) && (correct2[0] == 3 || correct2[1] == 3)) ||
-             (OVRInput.GetDown(OVRInput.Button.Four) && (correct2[0] == 4 || correct2[1] == 4)) )
+        } else if (inp == correct2[0] && inp == correct2[1])
             {
                 score += 1;
                 nextQ();
             }
-            else if (OVRInput.GetDown(OVRInput.Button.One) || OVRInput.GetDown(OVRInput.Button.Two) ||
-            OVRInput.GetDown(OVRInput.Button.Three) || OVRInput.GetDown(OVRInput.Button.Four))
+            else
             {
                 nextQ();
             }
